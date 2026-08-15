@@ -255,19 +255,25 @@ class ZKTeco
         return (($year % 100) * 12 * 31 + (($month - 1) * 31) + $day - 1) * 86400 + ($hour * 60 + $minute) * 60 + $second;
     }
 
-    public function decodeTime(int|float $data): string
+    public function decodeTime(int|float $t): string
     {
-        $second = (int)($data % 60);
-        $data = (int)($data / 60);
-        $minute = (int)($data % 60);
-        $data = (int)($data / 60);
-        $hour = (int)($data % 24);
-        $data = (int)($data / 24);
-        $day = (int)($data % 31 + 1);
-        $data = (int)($data / 31);
-        $month = (int)($data % 12 + 1);
-        $data = (int)($data / 12);
-        $year = (int)floor($data + 2000);
+        $second = (int)$t % 60;
+        $t = (int)floor($t / 60);
+
+        $minute = (int)$t % 60;
+        $t = (int)floor($t / 60);
+
+        $hour = (int)$t % 24;
+        $t = (int)floor($t / 24);
+
+        $day = (int)$t % 31 + 1;
+        $t = (int)floor($t / 31);
+
+        $month = (int)$t % 12 + 1;
+        $t = (int)floor($t / 12);
+
+        $year = (int)$t + 2000;
+
         return sprintf("%04d-%02d-%02d %02d:%02d:%02d", $year, $month, $day, $hour, $minute, $second);
     }
 
@@ -645,9 +651,17 @@ class ZKTeco
         try {
             $this->receivedData = '';
             @socket_recvfrom($this->socket, $this->receivedData, 1024, 0, $this->ip, $this->port);
-            $bytes = $this->getSizePayload();
+            
+            $u = unpack('H2h1/H2h2/H2h3/H2h4/H2h5/H2h6/H2h7/H2h8', substr($this->receivedData, 0, 8));
+            $commandAck = hexdec($u['h2'] . $u['h1']);
+            
+            $bytes = 0;
+            if ($commandAck == Constants::CMD_PREPARE_DATA) {
+                $uSize = unpack('Vsize', substr($this->receivedData, 8, 4));
+                $bytes = (int)$uSize['size'];
+            }
 
-            if ($bytes) {
+            if ($bytes > 0) {
                 while ($bytes > 0) {
                     $chunk = '';
                     @socket_recvfrom($this->socket, $chunk, 1032, 0, $this->ip, $this->port);
@@ -669,19 +683,20 @@ class ZKTeco
                         $this->attendanceData[$x] = substr($this->attendanceData[$x], 8);
                     }
                 }
-                $attendanceDataStr = substr(implode('', $this->attendanceData), 10);
+                // Strip 8-byte header from chunk 0 + 4-byte size integer = 12 bytes
+                $stream = substr(implode('', $this->attendanceData), 12);
 
-                while (strlen($attendanceDataStr) >= 40) {
-                    $u = unpack('H78', substr($attendanceDataStr, 0, 39));
-                    $u1 = hexdec(substr($u[1], 4, 2));
-                    $u2 = hexdec(substr($u[1], 6, 2));
-                    $uid = $u1 + ($u2 * 256);
-                    $id = str_replace("\0", '', (string)hex2bin(substr($u[1], 8, 16)));
-                    $state = hexdec(substr($u[1], 56, 2));
-                    $timestamp = $this->decodeTime(hexdec($this->reverseHex(substr($u[1], 58, 8))));
+                while (strlen($stream) >= 40) {
+                    $rec = substr($stream, 0, 40);
+                    $u = unpack('vuid/a24userid/Cstate/Vtime/Cpunch/a8space', $rec);
+                    
+                    $uid = (int)$u['uid'];
+                    $userId = trim(explode("\0", (string)$u['userid'], 2)[0]);
+                    $state = (int)$u['state'];
+                    $timestamp = $this->decodeTime((int)$u['time']);
 
-                    $attendance[] = [$uid, $id, $state, $timestamp];
-                    $attendanceDataStr = substr($attendanceDataStr, 40);
+                    $attendance[] = [$uid, $userId, $state, $timestamp];
+                    $stream = substr($stream, 40);
                 }
             }
             return $attendance;

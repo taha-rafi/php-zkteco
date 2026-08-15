@@ -1,5 +1,7 @@
 # 🚀 php-zkteco (Pure Native PHP 8.x ZKTeco Socket Library)
 
+[![Latest Stable Version](https://poser.pugx.org/taha-rafi/php-zkteco/v)](https://packagist.org/packages/taha-rafi/php-zkteco)
+[![Total Downloads](https://poser.pugx.org/taha-rafi/php-zkteco/downloads)](https://packagist.org/packages/taha-rafi/php-zkteco)
 [![PHP Version](https://img.shields.io/badge/PHP-8.0%20%7C%208.1%20%7C%208.2%20%7C%208.3-777BB4?style=for-the-badge&logo=php&logoColor=white)](https://php.net)
 [![License](https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge)](LICENSE)
 [![Comm Key Auth](https://img.shields.io/badge/Comm%20Key-Supported%20(Native)-brightgreen?style=for-the-badge&logo=shield)](https://github.com/taha-rafi/php-zkteco)

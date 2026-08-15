@@ -1,0 +1,37 @@
+{
+  "name": "taha-rafi/php-zkteco",
+  "description": "Modern, pure native PHP 8.x socket communication library for ZKTeco Biometric Time & Attendance devices with native Comm Key authentication support.",
+  "type": "library",
+  "keywords": [
+    "zkteco",
+    "biometrics",
+    "attendance",
+    "fingerprint",
+    "zklibrary",
+    "socket",
+    "udp",
+    "php8",
+    "commkey",
+    "tx628",
+    "zksoftware"
+  ],
+  "homepage": "https://github.com/taha-rafi/php-zkteco",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Taha Rafi",
+      "email": "contact@taharafi.com",
+      "role": "Software Engineer & Lead Developer"
+    }
+  ],
+  "require": {
+    "php": ">=8.0.0",
+    "ext-sockets": "*"
+  },
+  "autoload": {
+    "psr-4": {
+      "TahaRafi\\ZKTeco\\": "src/"
+    }
+  },
+  "minimum-stability": "stable"
+}

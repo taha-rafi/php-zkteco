@@ -4,3 +4,5 @@ composer.lock
 *.log
 .DS_Store
 Thumbs.db
+.zk_*.json
+.adms_*.json

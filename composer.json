@@ -1,6 +1,6 @@
 {
   "name": "taha-rafi/php-zkteco",
-  "description": "Modern, pure native PHP 8.x socket communication library for ZKTeco Biometric Time & Attendance devices with native Comm Key authentication support.",
+  "description": "Modern, pure native PHP 8.x dual-protocol (TCP + UDP) communication, Direct Hardware ATT_LOG Attendance Writer, Cloud POST Sync, ADMS Push Server, and Real-Time Webhook library for ZKTeco Biometric Time & Attendance devices with native Comm Key authentication.",
   "type": "library",
   "keywords": [
     "zkteco",
@@ -9,7 +9,11 @@
     "fingerprint",
     "zklibrary",
     "socket",
+    "tcp",
     "udp",
+    "webhooks",
+    "adms",
+    "iclock",
     "php8",
     "commkey",
     "tx628",
@@ -26,7 +30,8 @@
   ],
   "require": {
     "php": ">=8.0.0",
-    "ext-sockets": "*"
+    "ext-sockets": "*",
+    "ext-json": "*"
   },
   "autoload": {
     "psr-4": {

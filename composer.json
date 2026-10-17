@@ -4,6 +4,7 @@
   "type": "library",
   "keywords": [
     "zkteco",
+    "laravel",
     "biometrics",
     "attendance",
     "fingerprint",
@@ -38,5 +39,16 @@
       "TahaRafi\\ZKTeco\\": "src/"
     }
   },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "TahaRafi\\ZKTeco\\Laravel\\ZKTecoServiceProvider"
+      ],
+      "aliases": {
+        "ZKTeco": "TahaRafi\\ZKTeco\\Laravel\\Facades\\ZKTeco"
+      }
+    }
+  },
   "minimum-stability": "stable"
 }
+

@@ -1,16 +1,18 @@
-# 🚀 php-zkteco v2.0 (Pure Native PHP 8.x ZKTeco TCP/UDP, Cloud POST Sync, ADMS Push & Webhook Engine)
+# 🚀 php-zkteco v2.1 (Pure Native PHP 8.x & Laravel ZKTeco TCP/UDP, Direct Hardware ATT_LOG Writer, Cloud POST Sync, ADMS Push & Webhook Engine)
 
+[![Tests](https://github.com/taha-rafi/php-zkteco/actions/workflows/tests.yml/badge.svg)](https://github.com/taha-rafi/php-zkteco/actions/workflows/tests.yml)
 [![Latest Stable Version](https://poser.pugx.org/taha-rafi/php-zkteco/v)](https://packagist.org/packages/taha-rafi/php-zkteco)
 [![Total Downloads](https://poser.pugx.org/taha-rafi/php-zkteco/downloads)](https://packagist.org/packages/taha-rafi/php-zkteco)
 [![PHP Version](https://img.shields.io/badge/PHP-8.0%20%7C%208.1%20%7C%208.2%20%7C%208.3%20%7C%208.4-777BB4?style=for-the-badge&logo=php&logoColor=white)](https://php.net)
+[![Laravel](https://img.shields.io/badge/Laravel-8.x%20--%2012.x%20(Auto--Discovery)-FF2D20?style=for-the-badge&logo=laravel&logoColor=white)](https://github.com/taha-rafi/php-zkteco)
 [![License](https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge)](LICENSE)
 [![Comm Key Auth](https://img.shields.io/badge/Comm%20Key-Supported%20(Native)-brightgreen?style=for-the-badge&logo=shield)](https://github.com/taha-rafi/php-zkteco)
 [![Protocol](https://img.shields.io/badge/Protocol-Auto%20(TCP%20%2B%20UDP%20%2B%20ADMS)-orange?style=for-the-badge)](https://github.com/taha-rafi/php-zkteco)
 [![Webhooks](https://img.shields.io/badge/Webhooks-HMAC--SHA256%20%2B%20RealTime-purple?style=for-the-badge)](https://github.com/taha-rafi/php-zkteco)
 
-A next-generation, standalone **Pure Native PHP 8.x** communication, Cloud POST Sync, ADMS Push Server, and Real-Time Webhook library for **ZKTeco Biometric Time & Attendance Devices** (TX628, iClock, K-Series, uFace, SpeedFace, MB-Series, ZMM-Series).
+A next-generation, standalone **Pure Native PHP 8.x & Laravel** communication, Direct Hardware Attendance Writer, Cloud POST Sync, ADMS Push Server, and Real-Time Webhook library for **ZKTeco Biometric Time & Attendance Devices** (TX628, iClock, K-Series, uFace, SpeedFace, MB-Series, ZMM-Series).
 
-Unlike legacy PHP ZKTeco packages that only support unreliable **UDP** polling and only `GET` raw arrays, **php-zkteco v2.0** introduces:
+Unlike legacy PHP ZKTeco packages that only support unreliable **UDP** polling and only `GET` raw arrays, **php-zkteco v2.1** introduces:
 1. **Direct Hardware Attendance Writing (`CMD_SET_DATA = 3001`)**: The **first and only** ZKTeco library capable of writing attendance punches (`Check-In` / `Check-Out`) **directly into the physical ZKTeco machine's internal `ATT_LOG` memory** (`ZKDB.db`), plus selective attendance deletion by time range (`CMD_TIME_ATTLOG_DELE = 10005`).
 2. **Dual-Protocol Socket Engine (`auto`, `tcp`, `udp`)**: Full native ZKTeco **TCP framing (`\x50\x50\x82\x7d`)** with automatic fallback to **UDP**, eliminating dropped packets over WAN/VPN/Cloud links.
 3. **Bi-Directional `POST` & Cloud Sync Engine**: Directly `POST` attendance logs and user profiles to any remote REST API / ERP / HRMS with automatic batching, incremental cursor deduplication (`state_file`), and bulk-push users/cards/attendance to the machine.
@@ -19,9 +21,9 @@ Unlike legacy PHP ZKTeco packages that only support unreliable **UDP** polling a
 
 ---
 
-## ✨ What Makes `php-zkteco` v2.0 Different?
+## ✨ What Makes `php-zkteco` Different?
 
-| Feature | Other PHP/Python/Node ZKTeco Packages | `taha-rafi/php-zkteco` v2.0 |
+| Feature | Other PHP/Python/Node ZKTeco Packages | `taha-rafi/php-zkteco` v2.1 |
 |---|---|---|
 | **Write Attendance into Physical Machine** | ❌ **Impossible** (Read-Only `ATT_LOG`) | ✅ **Direct Hardware `ATT_LOG` Write (`markAttendance()` / `writeAttendanceToDevice()`)** |
 | **Selective Attendance Deletion** | ❌ Only full wipe (`clearAttendance()`) | ✅ **`deleteAttendanceByTimeRange()` & `deleteAttendanceBefore()`** |
@@ -32,16 +34,19 @@ Unlike legacy PHP ZKTeco packages that only support unreliable **UDP** polling a
 | **Real-Time Webhooks** | ❌ None | ✅ **Live `CMD_REG_EVENT` Listener + HMAC-SHA256 Webhooks** |
 | **ADMS / iClock Push Server** | ❌ None | ✅ **Built-in `AdmsServer` (`POST /iclock/cdata` + Command Queue)** |
 | **Access Control & Cards** | ❌ None | ✅ **Remote `unlockDoor()` + RFID `card_no` read/write** |
+| **Laravel Auto-Discovery** | ❌ Manual setup | ✅ **Zero-config `ZKTecoServiceProvider` & `ZKTeco` Facade** |
 
 ---
 
 ## 📦 Installation
 
-### Option 1: Via Composer (Recommended)
+### Option 1: Via Composer (Core PHP & Laravel)
 
 ```bash
 composer require taha-rafi/php-zkteco
 ```
+
+*(For Laravel 8–12: `ZKTecoServiceProvider` and the `ZKTeco` Facade are **auto-discovered**! Optionally publish the config with `php artisan vendor:publish --tag=zkteco-config` and set `ZKTECO_IP`, `ZKTECO_PORT`, and `ZKTECO_COMM_KEY` in `.env`.)*
 
 ### Option 2: Manual Require
 
@@ -54,6 +59,7 @@ require_once __DIR__ . '/src/ZKTeco.php';
 use TahaRafi\ZKTeco\ZKTeco;
 use TahaRafi\ZKTeco\Constants;
 ```
+
 
 ---
 

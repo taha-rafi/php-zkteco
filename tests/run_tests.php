@@ -205,8 +205,25 @@ assertCheck(trim($cmdResp2['body']) === 'OK', 'ADMS command queue is cleanly pop
 @unlink($tempQueueFile);
 @unlink($tempStateFile);
 
+// ---------------------------------------------------------------------------
+// 7. Laravel Auto-Discovery & Configuration Integrity
+// ---------------------------------------------------------------------------
+echo "\n[7] Testing Laravel Auto-Discovery & Configuration...\n";
+$laravelCfg = require __DIR__ . '/../config/zkteco.php';
+assertCheck(is_array($laravelCfg) && $laravelCfg['port'] === 4370 && $laravelCfg['protocol'] === 'auto', 'config/zkteco.php returns valid Laravel configuration array');
+$composerJson = json_decode((string)file_get_contents(__DIR__ . '/../composer.json'), true);
+assertCheck(
+    in_array('TahaRafi\\ZKTeco\\Laravel\\ZKTecoServiceProvider', $composerJson['extra']['laravel']['providers'] ?? [], true),
+    'composer.json registers ZKTecoServiceProvider for Laravel auto-discovery'
+);
+assertCheck(
+    ($composerJson['extra']['laravel']['aliases']['ZKTeco'] ?? '') === 'TahaRafi\\ZKTeco\\Laravel\\Facades\\ZKTeco',
+    'composer.json registers ZKTeco Facade alias for Laravel auto-discovery'
+);
+
 echo "\n==============================================================\n";
 echo "   Test Summary: {$passed} Passed | {$failed} Failed\n";
 echo "==============================================================\n";
 
 exit($failed > 0 ? 1 : 0);
+
